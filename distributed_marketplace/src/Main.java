@@ -1,26 +1,29 @@
 import java.util.Map;
 import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Main {
-    @SuppressWarnings("resource")
     public static void main(String[] args) {
         Marketplace marketplace = new Marketplace();
         Scanner scanner = new Scanner(System.in);
 
         // Pre-register two sellers with stock
-
-        // First Generated Seller
-        Seller seller1 = new Seller("James Wholesale");
-
-        // Second Generated Seller
-        Seller seller2 = new Seller("Lynn Wholesale");
-
+        Seller seller1 = new Seller("Irish Wholesale");
         marketplace.registerSeller(seller1);
-        marketplace.registerSeller(seller2);
+        // Seller seller2 = new Seller("Lynn Wholesale");
+        // marketplace.registerSeller(seller2);
 
-        // Pre-register a buyer for testing
-        Buyer testBuyer = new Buyer("b1");
-        testBuyer.joinMarket(marketplace);
+        // Simulate buyer actions
+        ExecutorService executor = Executors.newFixedThreadPool(4);
+        String[] buyerNames = { "Ann", "Bert", "Charlie", "Dominic" };
+        for (String buyerName : buyerNames) {
+            executor.submit(() -> {
+                Buyer buyer = new Buyer(buyerName);
+                buyer.joinMarket(marketplace);
+                buyer.tryToBuyItem(marketplace, "Irish Wholesale", "flower", 1);
+            });
+        }
 
         // Command line interface
         while (true) {
@@ -31,7 +34,7 @@ public class Main {
             System.out.println("3. View all buyers");
             System.out.println("4. Register a new buyer");
             System.out.println("5. Buy items");
-            System.out.println("6. Exit");
+            System.out.println("6. Exit\n");
             int option = Integer.parseInt(scanner.nextLine());
 
             switch (option) {
@@ -58,16 +61,14 @@ public class Main {
                     }
                     break;
                 case 4:
-                    for (int i = 1; i <= 4; i++) {
-                        System.out.print("Enter buyer " + i + " ID: ");
-                        String buyerId = scanner.nextLine();
-                        Buyer buyer = new Buyer(buyerId);
-                        buyer.joinMarket(marketplace);
-                    }
+                    System.out.print("Enter buyer ID: ");
+                    String buyerId = scanner.nextLine();
+                    Buyer buyer = new Buyer(buyerId);
+                    buyer.joinMarket(marketplace);
                     break;
                 case 5:
                     System.out.print("Enter buyer ID: ");
-                    String buyerId = scanner.nextLine();
+                    String buyerIdForBuy = scanner.nextLine();
                     System.out.println("Select a seller:");
                     int sellerIndex = 1;
                     for (Seller s : marketplace.getSellers().values()) {
@@ -93,9 +94,9 @@ public class Main {
                     System.out.print("Enter amount: ");
                     int amount = Integer.parseInt(scanner.nextLine());
 
-                    Buyer buyer = marketplace.getBuyer(buyerId);
-                    if (buyer != null) {
-                        buyer.tryToBuyItem(marketplace, selectedSeller.getSellerId(), itemId, amount);
+                    Buyer buyerForBuy = marketplace.getBuyer(buyerIdForBuy);
+                    if (buyerForBuy != null) {
+                        buyerForBuy.tryToBuyItem(marketplace, selectedSeller.getSellerId(), itemId, amount);
                     } else {
                         System.out.println("Buyer not found.");
                     }

@@ -12,12 +12,12 @@ public class Marketplace {
 
     public void registerSeller(Seller seller) {
         sellers.put(seller.getSellerId(), seller);
-        System.out.println("Seller " + seller.getSellerId() + " registered.");
+        // System.out.println("Seller " + seller.getSellerId() + " registered.");
     }
 
     public void registerBuyer(Buyer buyer) {
         buyers.put(buyer.getBuyerId(), buyer);
-        System.out.println("Buyer " + buyer.getBuyerId() + " registered.");
+        // System.out.println("Buyer " + buyer.getBuyerId() + " registered.");
     }
 
     public Seller getSeller(String sellerId) {
