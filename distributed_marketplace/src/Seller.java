@@ -44,8 +44,8 @@ public class Seller {
         }
     }
 
-    private void notifyBuyers(String itemId) {
-        System.out.println("Current stock of " + itemId + ": " + items.get(itemId));
+    private synchronized void notifyBuyers(String itemId) {
+        System.out.println(sellerId + ": \t" + itemId + ": " + items.get(itemId));
     }
 
     private void startSelling() {
@@ -58,10 +58,7 @@ public class Seller {
         for (String item : items.keySet()) {
             if (!item.equals(currentItem) && items.get(item) > 0) {
                 currentItem = item;
-                System.out.println("\n---------------------------");
-                System.out.println(getSellerId() + "\nNow selling: " + currentItem);
-                notifyBuyers(currentItem);
-                System.out.println("---------------------------");
+                printCurrentItem();
                 foundNewItem = true;
                 break;
             }
@@ -70,13 +67,21 @@ public class Seller {
             for (String item : items.keySet()) {
                 if (items.get(item) > 0) {
                     currentItem = item;
-                    System.out.println("\n---------------------------");
-                    System.out.println(getSellerId() + "\nNow selling: " + currentItem);
-                    notifyBuyers(currentItem);
-                    System.out.println("---------------------------");
+                    printCurrentItem();
                     break;
                 }
             }
         }
+    }
+
+    private synchronized void printCurrentItem() {
+        System.out.println("\n---------------------------");
+        System.out.println(getSellerId() + "\nNow selling: \t\t" + currentItem);
+        notifyBuyers(currentItem);
+        System.out.println("---------------------------");
+    }
+
+    public String getCurrentItem() {
+        return currentItem;
     }
 }
